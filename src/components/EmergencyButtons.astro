@@ -1,0 +1,152 @@
+---
+// Component for emergency buttons
+---
+
+<div class="emergency-section">
+  <h3>Emergencias</h3>
+  <div class="emergency-buttons">
+    <button class="emergency-btn ambulance-btn" onclick="callAmbulance()">
+      <div class="btn-icon">🚑</div>
+      <div class="btn-text">
+        <span class="btn-title">Llamar Ambulancia</span>
+        <span class="btn-subtitle">Emergencia médica</span>
+      </div>
+    </button>
+    
+    <button class="emergency-btn pharmacy-btn" onclick="callPharmacy()">
+      <div class="btn-icon">💊</div>
+      <div class="btn-text">
+        <span class="btn-title">Llamar Farmacia</span>
+        <span class="btn-subtitle">Medicamentos</span>
+      </div>
+    </button>
+  </div>
+</div>
+
+<style>
+  .emergency-section {
+    background: linear-gradient(135deg, #fee2e2, #fef3c7);
+    border: 2px solid #f87171;
+    border-radius: 12px;
+    padding: 1.5rem;
+    margin: 1rem 0;
+    max-width: 1200px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  .emergency-section h3 {
+    color: #dc2626;
+    font-size: 1.5rem;
+    font-weight: 700;
+    margin-bottom: 1rem;
+    text-align: center;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  .emergency-buttons {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+
+  .emergency-btn {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1rem 1.5rem;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-family: inherit;
+    transition: all 0.3s ease;
+    min-width: 200px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  }
+
+  .ambulance-btn {
+    background: linear-gradient(135deg, #dc2626, #ef4444);
+    color: white;
+  }
+
+  .ambulance-btn:hover {
+    background: linear-gradient(135deg, #b91c1c, #dc2626);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+  }
+
+  .pharmacy-btn {
+    background: linear-gradient(135deg, #059669, #10b981);
+    color: white;
+  }
+
+  .pharmacy-btn:hover {
+    background: linear-gradient(135deg, #047857, #059669);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+  }
+
+  .btn-icon {
+    font-size: 2rem;
+    line-height: 1;
+  }
+
+  .btn-text {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.25rem;
+  }
+
+  .btn-title {
+    font-size: 1.1rem;
+    font-weight: 600;
+    line-height: 1.2;
+  }
+
+  .btn-subtitle {
+    font-size: 0.9rem;
+    opacity: 0.9;
+    font-weight: 400;
+  }
+
+  .emergency-btn:active {
+    transform: translateY(0);
+  }
+
+  @media (max-width: 640px) {
+    .emergency-buttons {
+      flex-direction: column;
+      align-items: center;
+    }
+    
+    .emergency-btn {
+      width: 100%;
+      max-width: 300px;
+      justify-content: center;
+    }
+  }
+</style>
+
+<script>
+  function callAmbulance() {
+    // Número de emergencias en España: 112
+    // Puedes cambiar este número según tu país
+    const emergencyNumber = "112";
+    
+    if (confirm("¿Deseas llamar a la ambulancia?\n\nNúmero: " + emergencyNumber)) {
+      window.location.href = `tel:${emergencyNumber}`;
+    }
+  }
+
+  function callPharmacy() {
+    // Número de ejemplo para farmacia - cambiar por el número real
+    const pharmacyNumber = "911234567";
+    
+    if (confirm("¿Deseas llamar a la farmacia?\n\nNúmero: " + pharmacyNumber)) {
+      window.location.href = `tel:${pharmacyNumber}`;
+    }
+  }
+</script> 
