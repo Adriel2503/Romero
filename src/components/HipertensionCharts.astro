@@ -4,7 +4,7 @@ import { supabase } from '../lib/supabase';
 // Obtener todos los registros ordenados por timestamp
 const { data, error } = await supabase
   .from('hipertension')
-  .select('timestamp, hr_bpm, rr_ms, a_pico_v, sqi')
+  .select('timestamp, hr_bpm, rr_ms, a_pico_v, sqi, hr_status, a_alert, sqi_alert')
   .order('timestamp', { ascending: true });
 
 console.log('Supabase response:', { data, error });
@@ -23,6 +23,21 @@ const hrData = chartData.map(record => record.hr_bpm);
 const rrData = chartData.map(record => record.rr_ms);
 const aPicoData = chartData.map(record => record.a_pico_v);
 const sqiData = chartData.map(record => record.sqi);
+const bradycardiaPoints = chartData.map(record => ({
+  x: record.timestamp,
+  y: record.hr_bpm,
+  bradycardia: record.hr_status === 'Bradycardia'
+}));
+const amplitudeAlertPoints = chartData.map(record => ({
+  x: record.timestamp,
+  y: record.a_pico_v,
+  alert: record.a_alert === true
+}));
+const sqiAlertPoints = chartData.map(record => ({
+  x: record.timestamp,
+  y: record.sqi,
+  alert: record.sqi_alert === true
+}));
 ---
 
 <div class="charts-container">
@@ -56,7 +71,7 @@ const sqiData = chartData.map(record => record.sqi);
   )}
 </div>
 
-<script define:vars={{ labels, hrData, rrData, aPicoData, sqiData }}>
+<script define:vars={{ labels, hrData, rrData, aPicoData, sqiData, bradycardiaPoints, amplitudeAlertPoints, sqiAlertPoints }}>
   window.addEventListener('load', () => {
     const hrCtx = document.getElementById('hrChart');
     const rrCtx = document.getElementById('rrChart');
@@ -133,9 +148,21 @@ const sqiData = chartData.map(record => record.sqi);
           borderWidth: 2,
           fill: true,
           tension: 0.4,
-          pointRadius: 0,
+          pointRadius: (context) => {
+            const index = context.dataIndex;
+            return bradycardiaPoints[index].bradycardia ? 3 : 0;
+          },
+          pointBackgroundColor: (context) => {
+            const index = context.dataIndex;
+            return bradycardiaPoints[index].bradycardia ? '#ef4444' : '#3b82f6';
+          },
+          pointBorderColor: '#fff',
+          pointBorderWidth: 1,
           pointHoverRadius: 6,
-          pointHoverBackgroundColor: '#3b82f6',
+          pointHoverBackgroundColor: (context) => {
+            const index = context.dataIndex;
+            return bradycardiaPoints[index].bradycardia ? '#ef4444' : '#3b82f6';
+          },
           pointHoverBorderColor: '#fff',
           pointHoverBorderWidth: 2
         }]
@@ -146,6 +173,8 @@ const sqiData = chartData.map(record => record.sqi);
           ...commonOptions.scales,
           y: {
             ...commonOptions.scales.y,
+            min: 30,
+            max: 120,
             title: {
               display: true,
               text: 'BPM',
@@ -207,9 +236,21 @@ const sqiData = chartData.map(record => record.sqi);
           borderWidth: 2,
           fill: true,
           tension: 0.4,
-          pointRadius: 0,
+          pointRadius: (context) => {
+            const index = context.dataIndex;
+            return amplitudeAlertPoints[index].alert ? 3 : 0;
+          },
+          pointBackgroundColor: (context) => {
+            const index = context.dataIndex;
+            return amplitudeAlertPoints[index].alert ? '#ef4444' : '#0f766e';
+          },
+          pointBorderColor: '#fff',
+          pointBorderWidth: 1,
           pointHoverRadius: 6,
-          pointHoverBackgroundColor: '#0f766e',
+          pointHoverBackgroundColor: (context) => {
+            const index = context.dataIndex;
+            return amplitudeAlertPoints[index].alert ? '#ef4444' : '#0f766e';
+          },
           pointHoverBorderColor: '#fff',
           pointHoverBorderWidth: 2
         }]
@@ -220,6 +261,8 @@ const sqiData = chartData.map(record => record.sqi);
           ...commonOptions.scales,
           y: {
             ...commonOptions.scales.y,
+            min: 0.6,
+            max: 1.6,
             title: {
               display: true,
               text: 'V',
@@ -244,9 +287,21 @@ const sqiData = chartData.map(record => record.sqi);
           borderWidth: 2,
           fill: true,
           tension: 0.4,
-          pointRadius: 0,
+          pointRadius: (context) => {
+            const index = context.dataIndex;
+            return sqiAlertPoints[index].alert ? 3 : 0;
+          },
+          pointBackgroundColor: (context) => {
+            const index = context.dataIndex;
+            return sqiAlertPoints[index].alert ? '#ef4444' : '#9333ea';
+          },
+          pointBorderColor: '#fff',
+          pointBorderWidth: 1,
           pointHoverRadius: 6,
-          pointHoverBackgroundColor: '#9333ea',
+          pointHoverBackgroundColor: (context) => {
+            const index = context.dataIndex;
+            return sqiAlertPoints[index].alert ? '#ef4444' : '#9333ea';
+          },
           pointHoverBorderColor: '#fff',
           pointHoverBorderWidth: 2
         }]
@@ -257,6 +312,7 @@ const sqiData = chartData.map(record => record.sqi);
           ...commonOptions.scales,
           y: {
             ...commonOptions.scales.y,
+            min: 0.3,
             title: {
               display: true,
               text: 'Índice',
