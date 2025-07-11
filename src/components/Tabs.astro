@@ -122,7 +122,9 @@ const tabs = [
         // Add active class to clicked button and corresponding pane
         button.classList.add('active');
         const tabId = button.getAttribute('data-tab');
-        document.getElementById(tabId)?.classList.add('active');
+        if (tabId) {
+          document.getElementById(tabId)?.classList.add('active');
+        }
       });
     });
   });
