@@ -1,0 +1,321 @@
+---
+import { supabase } from '../lib/supabase';
+
+// Obtener todos los registros ordenados por timestamp
+const { data, error } = await supabase
+  .from('hipertension')
+  .select('timestamp, hr_bpm, rr_ms, a_pico_v, sqi')
+  .order('timestamp', { ascending: true });
+
+console.log('Supabase response:', { data, error });
+
+// Preparar los datos para las gráficas
+const chartData = data || [];
+
+// Preparar los datos para las gráficas
+const labels = chartData.map(record => {
+  const date = new Date(record.timestamp);
+  // Formato más corto: HH:mm:ss
+  return date.toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+});
+
+const hrData = chartData.map(record => record.hr_bpm);
+const rrData = chartData.map(record => record.rr_ms);
+const aPicoData = chartData.map(record => record.a_pico_v);
+const sqiData = chartData.map(record => record.sqi);
+---
+
+<div class="charts-container">
+  {error && <p class="error">Error al cargar datos: {error.message}</p>}
+  {!data && <p>Cargando datos...</p>}
+  {data && data.length === 0 && <p>No hay datos disponibles</p>}
+  
+  {data && data.length > 0 && (
+    <>
+      <div class="chart-row">
+        <div class="chart-wrapper">
+          <h3>Frecuencia Cardíaca</h3>
+          <canvas id="hrChart"></canvas>
+        </div>
+        <div class="chart-wrapper">
+          <h3>Intervalo RR</h3>
+          <canvas id="rrChart"></canvas>
+        </div>
+      </div>
+      <div class="chart-row">
+        <div class="chart-wrapper">
+          <h3>Amplitud del Pico</h3>
+          <canvas id="aPicoChart"></canvas>
+        </div>
+        <div class="chart-wrapper">
+          <h3>Índice de Calidad de la Señal</h3>
+          <canvas id="sqiChart"></canvas>
+        </div>
+      </div>
+    </>
+  )}
+</div>
+
+<script define:vars={{ labels, hrData, rrData, aPicoData, sqiData }}>
+  window.addEventListener('load', () => {
+    const hrCtx = document.getElementById('hrChart');
+    const rrCtx = document.getElementById('rrChart');
+    const aPicoCtx = document.getElementById('aPicoChart');
+    const sqiCtx = document.getElementById('sqiChart');
+    
+    if (!hrCtx || !rrCtx || !aPicoCtx || !sqiCtx) {
+      console.error('No se encontraron los elementos canvas');
+      return;
+    }
+
+    // Configuración común para todas las gráficas
+    const commonOptions = {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: {
+          display: false
+        },
+        tooltip: {
+          mode: 'index',
+          intersect: false,
+          backgroundColor: 'rgba(255, 255, 255, 0.9)',
+          titleColor: '#1e293b',
+          bodyColor: '#1e293b',
+          borderColor: '#e2e8f0',
+          borderWidth: 1,
+          padding: 10,
+          displayColors: false
+        }
+      },
+      layout: {
+        padding: {
+          bottom: 20
+        }
+      },
+      scales: {
+        x: {
+          grid: {
+            display: false
+          },
+          ticks: {
+            maxRotation: 0,
+            autoSkip: true,
+            maxTicksLimit: 10,
+            font: {
+              size: 11
+            },
+            padding: 10
+          }
+        },
+        y: {
+          grid: {
+            color: 'rgba(226, 232, 240, 0.5)'
+          }
+        }
+      },
+      interaction: {
+        mode: 'nearest',
+        axis: 'x',
+        intersect: false
+      }
+    };
+
+    // Crear gráfica de frecuencia cardíaca
+    new Chart(hrCtx, {
+      type: 'line',
+      data: {
+        labels,
+        datasets: [{
+          data: hrData,
+          borderColor: '#3b82f6',
+          backgroundColor: 'rgba(59, 130, 246, 0.1)',
+          borderWidth: 2,
+          fill: true,
+          tension: 0.4,
+          pointRadius: 0,
+          pointHoverRadius: 6,
+          pointHoverBackgroundColor: '#3b82f6',
+          pointHoverBorderColor: '#fff',
+          pointHoverBorderWidth: 2
+        }]
+      },
+      options: {
+        ...commonOptions,
+        scales: {
+          ...commonOptions.scales,
+          y: {
+            ...commonOptions.scales.y,
+            title: {
+              display: true,
+              text: 'BPM',
+              font: {
+                weight: 'bold'
+              }
+            }
+          }
+        }
+      }
+    });
+
+    // Crear gráfica de intervalo RR
+    new Chart(rrCtx, {
+      type: 'line',
+      data: {
+        labels,
+        datasets: [{
+          data: rrData,
+          borderColor: '#1d4ed8',
+          backgroundColor: 'rgba(29, 78, 216, 0.1)',
+          borderWidth: 2,
+          fill: true,
+          tension: 0.4,
+          pointRadius: 0,
+          pointHoverRadius: 6,
+          pointHoverBackgroundColor: '#1d4ed8',
+          pointHoverBorderColor: '#fff',
+          pointHoverBorderWidth: 2
+        }]
+      },
+      options: {
+        ...commonOptions,
+        scales: {
+          ...commonOptions.scales,
+          y: {
+            ...commonOptions.scales.y,
+            title: {
+              display: true,
+              text: 'ms',
+              font: {
+                weight: 'bold'
+              }
+            }
+          }
+        }
+      }
+    });
+
+    // Crear gráfica de amplitud del pico
+    new Chart(aPicoCtx, {
+      type: 'line',
+      data: {
+        labels,
+        datasets: [{
+          data: aPicoData,
+          borderColor: '#0f766e',
+          backgroundColor: 'rgba(15, 118, 110, 0.1)',
+          borderWidth: 2,
+          fill: true,
+          tension: 0.4,
+          pointRadius: 0,
+          pointHoverRadius: 6,
+          pointHoverBackgroundColor: '#0f766e',
+          pointHoverBorderColor: '#fff',
+          pointHoverBorderWidth: 2
+        }]
+      },
+      options: {
+        ...commonOptions,
+        scales: {
+          ...commonOptions.scales,
+          y: {
+            ...commonOptions.scales.y,
+            title: {
+              display: true,
+              text: 'V',
+              font: {
+                weight: 'bold'
+              }
+            }
+          }
+        }
+      }
+    });
+
+    // Crear gráfica de SQI
+    new Chart(sqiCtx, {
+      type: 'line',
+      data: {
+        labels,
+        datasets: [{
+          data: sqiData,
+          borderColor: '#9333ea',
+          backgroundColor: 'rgba(147, 51, 234, 0.1)',
+          borderWidth: 2,
+          fill: true,
+          tension: 0.4,
+          pointRadius: 0,
+          pointHoverRadius: 6,
+          pointHoverBackgroundColor: '#9333ea',
+          pointHoverBorderColor: '#fff',
+          pointHoverBorderWidth: 2
+        }]
+      },
+      options: {
+        ...commonOptions,
+        scales: {
+          ...commonOptions.scales,
+          y: {
+            ...commonOptions.scales.y,
+            title: {
+              display: true,
+              text: 'Índice',
+              font: {
+                weight: 'bold'
+              }
+            }
+          }
+        }
+      }
+    });
+  });
+</script>
+
+<style>
+  .charts-container {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+    margin-top: 2rem;
+  }
+
+  .chart-row {
+    display: flex;
+    gap: 2rem;
+    flex-direction: column;
+  }
+
+  .chart-wrapper {
+    background: white;
+    border-radius: 1rem;
+    padding: 1.5rem 1.5rem 2rem 1.5rem;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    height: 400px;
+    width: 100%;
+  }
+
+  h3 {
+    margin-bottom: 1rem;
+    color: #1e293b;
+    font-size: 1.25rem;
+    font-weight: 600;
+  }
+
+  .error {
+    color: #ef4444;
+    padding: 1rem;
+    background: #fee2e2;
+    border-radius: 0.5rem;
+    margin-bottom: 1rem;
+  }
+
+  @media (min-width: 1024px) {
+    .chart-row {
+      flex-direction: row;
+    }
+
+    .chart-wrapper {
+      width: 50%;
+    }
+  }
+</style> 

@@ -1,0 +1,2 @@
+id,apellido,nombre_paciente,edad,altura (cm),peso (kg),creatinina (mg/dL),urea (mg/dL),potasio ( mmol/L),ph,proteinuria,calcio ( mmol/L),egfr,bicarbonato  (mg/dL),tipo,fecha_registro
+int,string,string,int,float,float,float,float,float,float,float,float,float,float,BOOL,timestamptz

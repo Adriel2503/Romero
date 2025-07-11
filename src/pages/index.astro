@@ -1,11 +1,40 @@
 ---
-import Welcome from '../components/Welcome.astro';
 import Layout from '../layouts/Layout.astro';
-
-// Welcome to Astro! Wondering what to do next? Check out the Astro documentation at https://docs.astro.build
-// Don't want to use any of this? Delete everything in this file, the `assets`, `components`, and `layouts` directories, and start fresh.
+import Tabs from '../components/Tabs.astro';
 ---
 
-<Layout>
-	<Welcome />
+<Layout title="Centro Médico - Información de Salud">
+	<main>
+		<div class="hero">
+			<h1>Centro de Información Médica</h1>
+			<p>Información confiable sobre condiciones médicas comunes</p>
+		</div>
+
+		<Tabs />
+	</main>
 </Layout>
+
+<style>
+	main {
+		width: 100%;
+	}
+
+	.hero {
+		background: linear-gradient(to right, #1e3a8a, #3b82f6);
+		color: white;
+		padding: 2rem 1.5rem;  /* Reducido de 4rem a 2rem */
+		text-align: center;
+		margin-bottom: 1rem;   /* Reducido de 2rem a 1rem */
+	}
+
+	h1 {
+		font-size: 2rem;       /* Reducido de 2.5rem a 2rem */
+		font-weight: 700;
+		margin-bottom: 0.5rem; /* Reducido de 1rem a 0.5rem */
+	}
+
+	p {
+		font-size: 1.1rem;     /* Reducido de 1.2rem a 1.1rem */
+		opacity: 0.9;
+	}
+</style>
