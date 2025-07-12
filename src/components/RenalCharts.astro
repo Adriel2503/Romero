@@ -1,0 +1,541 @@
+---
+import { supabase } from '../lib/supabase';
+
+// Obtener los datos de insuficiencia renal ordenados por id
+const { data, error } = await supabase
+  .from('renal')
+  .select('id, ph, calcio, creatinina, urea, proteinuria, potasio')
+  .order('id', { ascending: true });
+
+console.log('Supabase response (renal):', { data, error });
+
+const chartData = data || [];
+
+// Preparar los datos para las gráficas
+const labels = chartData.map(record => record.id.toString());
+const phData = chartData.map(record => record.ph);
+const calcioData = chartData.map(record => record.calcio);
+const creatininaData = chartData.map(record => record.creatinina);
+const ureaData = chartData.map(record => record.urea);
+const proteinuriaData = chartData.map(record => record.proteinuria);
+const potasioData = chartData.map(record => record.potasio);
+---
+
+<div class="charts-container">
+  {error && <p class="error">Error al cargar datos: {error.message}</p>}
+  {!data && <p>Cargando datos...</p>}
+  {data && data.length === 0 && <p>No hay datos disponibles</p>}
+  
+  {data && data.length > 0 && (
+    <>
+      <div class="charts-grid">
+        <div class="chart-wrapper">
+          <h3>pH</h3>
+          <canvas id="phChart"></canvas>
+        </div>
+        <div class="chart-wrapper">
+          <h3>Calcio (mg/dL)</h3>
+          <canvas id="calcioChart"></canvas>
+        </div>
+        <div class="chart-wrapper">
+          <h3>Creatinina (mg/dL)</h3>
+          <canvas id="creatininaChart"></canvas>
+        </div>
+        <div class="chart-wrapper">
+          <h3>Urea (mg/dL)</h3>
+          <canvas id="ureaChart"></canvas>
+        </div>
+        <div class="chart-wrapper">
+          <h3>Proteinuria (g/24h)</h3>
+          <canvas id="proteinuriaChart"></canvas>
+        </div>
+        <div class="chart-wrapper">
+          <h3>Potasio (mEq/L)</h3>
+          <canvas id="potasioChart"></canvas>
+        </div>
+      </div>
+      
+      <!-- Leyenda personalizada -->
+      <div class="legend-container">
+        <h3>Leyenda y Rangos Normales</h3>
+        <div class="legend-grid">
+          <div class="legend-section">
+            <h4>pH</h4>
+            <div class="legend-items">
+              <div class="legend-range">
+                <span class="range-label">Rango normal:</span>
+                <span class="range-value">7.35 - 7.45</span>
+              </div>
+            </div>
+          </div>
+          
+          <div class="legend-section">
+            <h4>Calcio</h4>
+            <div class="legend-items">
+              <div class="legend-range">
+                <span class="range-label">Rango normal:</span>
+                <span class="range-value">8.5 - 10.5 mg/dL</span>
+              </div>
+            </div>
+          </div>
+          
+          <div class="legend-section">
+            <h4>Creatinina</h4>
+            <div class="legend-items">
+              <div class="legend-range">
+                <span class="range-label">Rango normal:</span>
+                <span class="range-value">0.6 - 1.2 mg/dL</span>
+              </div>
+            </div>
+          </div>
+          
+          <div class="legend-section">
+            <h4>Urea</h4>
+            <div class="legend-items">
+              <div class="legend-range">
+                <span class="range-label">Rango normal:</span>
+                <span class="range-value">10 - 20 mg/dL</span>
+              </div>
+            </div>
+          </div>
+          
+          <div class="legend-section">
+            <h4>Proteinuria</h4>
+            <div class="legend-items">
+              <div class="legend-range">
+                <span class="range-label">Rango normal:</span>
+                <span class="range-value">&lt; 0.15 g/24h</span>
+              </div>
+            </div>
+          </div>
+          
+          <div class="legend-section">
+            <h4>Potasio</h4>
+            <div class="legend-items">
+              <div class="legend-range">
+                <span class="range-label">Rango normal:</span>
+                <span class="range-value">3.5 - 5.0 mEq/L</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </>
+  )}
+</div>
+
+<script define:vars={{ labels, phData, calcioData, creatininaData, ureaData, proteinuriaData, potasioData }}>
+  window.addEventListener('load', () => {
+    // Configuración común para todas las gráficas
+    const commonOptions = {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: {
+          display: false
+        },
+        tooltip: {
+          mode: 'index',
+          intersect: false,
+          backgroundColor: 'rgba(255, 255, 255, 0.9)',
+          titleColor: '#1e293b',
+          bodyColor: '#1e293b',
+          borderColor: '#e2e8f0',
+          borderWidth: 1,
+          padding: 10,
+          displayColors: false
+        }
+      },
+      layout: {
+        padding: {
+          bottom: 20
+        }
+      },
+      scales: {
+        x: {
+          title: {
+            display: true,
+            text: 'ID del Paciente',
+            font: {
+              weight: 'bold'
+            }
+          },
+          grid: {
+            display: false
+          },
+          ticks: {
+            maxRotation: 45,
+            autoSkip: true,
+            maxTicksLimit: 10,
+            font: {
+              size: 11
+            }
+          }
+        },
+        y: {
+          grid: {
+            color: 'rgba(226, 232, 240, 0.5)'
+          }
+        }
+      },
+      interaction: {
+        mode: 'nearest',
+        axis: 'x',
+        intersect: false
+      }
+    };
+
+    // Crear gráfica de pH
+    const phCtx = document.getElementById('phChart');
+    if (phCtx) {
+      new Chart(phCtx, {
+        type: 'line',
+        data: {
+          labels,
+          datasets: [{
+            data: phData,
+            borderColor: '#10b981',
+            backgroundColor: 'rgba(16, 185, 129, 0.1)',
+            borderWidth: 2,
+            fill: true,
+            tension: 0.4,
+            pointRadius: 3,
+            pointBackgroundColor: '#10b981',
+            pointBorderColor: '#fff',
+            pointBorderWidth: 1,
+            pointHoverRadius: 6
+          }]
+        },
+        options: {
+          ...commonOptions,
+          scales: {
+            ...commonOptions.scales,
+            y: {
+              ...commonOptions.scales.y,
+              title: {
+                display: true,
+                text: 'pH',
+                font: {
+                  weight: 'bold'
+                }
+              }
+            }
+          }
+        }
+      });
+    }
+
+    // Crear gráfica de Calcio
+    const calcioCtx = document.getElementById('calcioChart');
+    if (calcioCtx) {
+      new Chart(calcioCtx, {
+        type: 'line',
+        data: {
+          labels,
+          datasets: [{
+            data: calcioData,
+            borderColor: '#f59e0b',
+            backgroundColor: 'rgba(245, 158, 11, 0.1)',
+            borderWidth: 2,
+            fill: true,
+            tension: 0.4,
+            pointRadius: 3,
+            pointBackgroundColor: '#f59e0b',
+            pointBorderColor: '#fff',
+            pointBorderWidth: 1,
+            pointHoverRadius: 6
+          }]
+        },
+        options: {
+          ...commonOptions,
+          scales: {
+            ...commonOptions.scales,
+            y: {
+              ...commonOptions.scales.y,
+              title: {
+                display: true,
+                text: 'mg/dL',
+                font: {
+                  weight: 'bold'
+                }
+              }
+            }
+          }
+        }
+      });
+    }
+
+    // Crear gráfica de Creatinina
+    const creatininaCtx = document.getElementById('creatininaChart');
+    if (creatininaCtx) {
+      new Chart(creatininaCtx, {
+        type: 'line',
+        data: {
+          labels,
+          datasets: [{
+            data: creatininaData,
+            borderColor: '#ef4444',
+            backgroundColor: 'rgba(239, 68, 68, 0.1)',
+            borderWidth: 2,
+            fill: true,
+            tension: 0.4,
+            pointRadius: 3,
+            pointBackgroundColor: '#ef4444',
+            pointBorderColor: '#fff',
+            pointBorderWidth: 1,
+            pointHoverRadius: 6
+          }]
+        },
+        options: {
+          ...commonOptions,
+          scales: {
+            ...commonOptions.scales,
+            y: {
+              ...commonOptions.scales.y,
+              title: {
+                display: true,
+                text: 'mg/dL',
+                font: {
+                  weight: 'bold'
+                }
+              }
+            }
+          }
+        }
+      });
+    }
+
+    // Crear gráfica de Urea
+    const ureaCtx = document.getElementById('ureaChart');
+    if (ureaCtx) {
+      new Chart(ureaCtx, {
+        type: 'line',
+        data: {
+          labels,
+          datasets: [{
+            data: ureaData,
+            borderColor: '#8b5cf6',
+            backgroundColor: 'rgba(139, 92, 246, 0.1)',
+            borderWidth: 2,
+            fill: true,
+            tension: 0.4,
+            pointRadius: 3,
+            pointBackgroundColor: '#8b5cf6',
+            pointBorderColor: '#fff',
+            pointBorderWidth: 1,
+            pointHoverRadius: 6
+          }]
+        },
+        options: {
+          ...commonOptions,
+          scales: {
+            ...commonOptions.scales,
+            y: {
+              ...commonOptions.scales.y,
+              title: {
+                display: true,
+                text: 'mg/dL',
+                font: {
+                  weight: 'bold'
+                }
+              }
+            }
+          }
+        }
+      });
+    }
+
+    // Crear gráfica de Proteinuria
+    const proteinuriaCtx = document.getElementById('proteinuriaChart');
+    if (proteinuriaCtx) {
+      new Chart(proteinuriaCtx, {
+        type: 'line',
+        data: {
+          labels,
+          datasets: [{
+            data: proteinuriaData,
+            borderColor: '#06b6d4',
+            backgroundColor: 'rgba(6, 182, 212, 0.1)',
+            borderWidth: 2,
+            fill: true,
+            tension: 0.4,
+            pointRadius: 3,
+            pointBackgroundColor: '#06b6d4',
+            pointBorderColor: '#fff',
+            pointBorderWidth: 1,
+            pointHoverRadius: 6
+          }]
+        },
+        options: {
+          ...commonOptions,
+          scales: {
+            ...commonOptions.scales,
+            y: {
+              ...commonOptions.scales.y,
+              title: {
+                display: true,
+                text: 'g/24h',
+                font: {
+                  weight: 'bold'
+                }
+              }
+            }
+          }
+        }
+      });
+    }
+
+    // Crear gráfica de Potasio
+    const potasioCtx = document.getElementById('potasioChart');
+    if (potasioCtx) {
+      new Chart(potasioCtx, {
+        type: 'line',
+        data: {
+          labels,
+          datasets: [{
+            data: potasioData,
+            borderColor: '#f97316',
+            backgroundColor: 'rgba(249, 115, 22, 0.1)',
+            borderWidth: 2,
+            fill: true,
+            tension: 0.4,
+            pointRadius: 3,
+            pointBackgroundColor: '#f97316',
+            pointBorderColor: '#fff',
+            pointBorderWidth: 1,
+            pointHoverRadius: 6
+          }]
+        },
+        options: {
+          ...commonOptions,
+          scales: {
+            ...commonOptions.scales,
+            y: {
+              ...commonOptions.scales.y,
+              title: {
+                display: true,
+                text: 'mEq/L',
+                font: {
+                  weight: 'bold'
+                }
+              }
+            }
+          }
+        }
+      });
+    }
+  });
+</script>
+
+<style>
+  .charts-container {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+  }
+
+  .charts-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(500px, 1fr));
+    gap: 2rem;
+    margin-bottom: 2rem;
+  }
+
+  .chart-wrapper {
+    background: white;
+    border-radius: 8px;
+    padding: 1.5rem;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    border: 1px solid #e2e8f0;
+  }
+
+  .chart-wrapper h3 {
+    margin: 0 0 1rem 0;
+    color: #1e293b;
+    font-size: 1.2rem;
+    font-weight: 600;
+    text-align: center;
+  }
+
+  .chart-wrapper canvas {
+    height: 300px !important;
+    width: 100% !important;
+  }
+
+  .legend-container {
+    background: white;
+    border-radius: 8px;
+    padding: 1.5rem;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    border: 1px solid #e2e8f0;
+  }
+
+  .legend-container h3 {
+    margin: 0 0 1.5rem 0;
+    color: #1e293b;
+    font-size: 1.3rem;
+    font-weight: 600;
+    text-align: center;
+  }
+
+  .legend-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1.5rem;
+  }
+
+  .legend-section h4 {
+    margin: 0 0 0.5rem 0;
+    color: #374151;
+    font-size: 1.1rem;
+    font-weight: 600;
+  }
+
+  .legend-items {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .legend-range {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .range-label {
+    color: #6b7280;
+    font-size: 0.9rem;
+  }
+
+  .range-value {
+    color: #1e293b;
+    font-weight: 600;
+    font-size: 0.9rem;
+  }
+
+  .error {
+    color: #ef4444;
+    text-align: center;
+    font-weight: 600;
+    padding: 1rem;
+    background: #fef2f2;
+    border: 1px solid #fecaca;
+    border-radius: 6px;
+  }
+
+  /* Responsive */
+  @media (max-width: 768px) {
+    .charts-grid {
+      grid-template-columns: 1fr;
+    }
+    
+    .chart-wrapper {
+      padding: 1rem;
+    }
+    
+    .legend-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+</style> 

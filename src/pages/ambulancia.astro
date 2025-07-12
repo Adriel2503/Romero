@@ -1,0 +1,325 @@
+---
+import Layout from '../layouts/Layout.astro';
+---
+
+<Layout title="Directorio de Hospitales - Centro de Control">
+  <main>
+    <div class="directory-container">
+      <header class="directory-header">
+        <h1>🚑 Directorio de Hospitales</h1>
+        <p>Servicios de emergencia médica en Lima, Perú</p>
+        <a href="/" class="back-btn">← Volver al Centro de Control</a>
+      </header>
+
+      <div class="emergency-numbers">
+        <h2>📞 Números de Emergencia</h2>
+        <div class="emergency-grid">
+          <div class="emergency-card urgent">
+            <div class="emergency-icon">🚨</div>
+            <div class="emergency-info">
+              <h3>Emergencias Generales</h3>
+              <p class="emergency-number">105</p>
+              <button onclick="callNumber('105')" class="call-btn">Llamar Ahora</button>
+            </div>
+          </div>
+          <div class="emergency-card">
+            <div class="emergency-icon">🚑</div>
+            <div class="emergency-info">
+              <h3>SAMU (Ambulancia)</h3>
+              <p class="emergency-number">106</p>
+              <button onclick="callNumber('106')" class="call-btn">Llamar Ahora</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="hospitals-section">
+        <h2>🏥 Hospitales Principales</h2>
+        <div class="hospitals-grid">
+          
+          <div class="hospital-card">
+            <h3>Hospital Nacional Dos de Mayo</h3>
+            <p class="hospital-address">Av. Grau 13, Cercado de Lima</p>
+            <p class="hospital-phone">📞 (01) 328-0028</p>
+            <p class="hospital-specialty">Emergencias 24h • Trauma • Cardiología</p>
+            <button onclick="callNumber('013280028')" class="call-btn">Llamar</button>
+          </div>
+
+          <div class="hospital-card">
+            <h3>Hospital Guillermo Almenara Irigoyen</h3>
+            <p class="hospital-address">Av. Grau 800, La Victoria</p>
+            <p class="hospital-phone">📞 (01) 324-2983</p>
+            <p class="hospital-specialty">Emergencias 24h • Especialidades múltiples</p>
+            <button onclick="callNumber('013242983')" class="call-btn">Llamar</button>
+          </div>
+
+          <div class="hospital-card">
+            <h3>Hospital Nacional Arzobispo Loayza</h3>
+            <p class="hospital-address">Av. Alfonso Ugarte 848, Cercado de Lima</p>
+            <p class="hospital-phone">📞 (01) 614-6500</p>
+            <p class="hospital-specialty">Emergencias 24h • Medicina General</p>
+            <button onclick="callNumber('016146500')" class="call-btn">Llamar</button>
+          </div>
+
+          <div class="hospital-card">
+            <h3>Hospital Rebagliati</h3>
+            <p class="hospital-address">Av. Sabogal 635, Jesús María</p>
+            <p class="hospital-phone">📞 (01) 265-4901</p>
+            <p class="hospital-specialty">Emergencias 24h • Alta complejidad</p>
+            <button onclick="callNumber('012654901')" class="call-btn">Llamar</button>
+          </div>
+
+          <div class="hospital-card">
+            <h3>Hospital María Auxiliadora</h3>
+            <p class="hospital-address">Av. Miguel Iglesias 968, San Juan de Miraflores</p>
+            <p class="hospital-phone">📞 (01) 617-6000</p>
+            <p class="hospital-specialty">Emergencias 24h • Pediatría</p>
+            <button onclick="callNumber('016176000')" class="call-btn">Llamar</button>
+          </div>
+
+          <div class="hospital-card">
+            <h3>Hospital Cayetano Heredia</h3>
+            <p class="hospital-address">Av. Honorio Delgado 262, San Martín de Porres</p>
+            <p class="hospital-phone">📞 (01) 482-0402</p>
+            <p class="hospital-specialty">Emergencias 24h • Investigación</p>
+            <button onclick="callNumber('014820402')" class="call-btn">Llamar</button>
+          </div>
+
+        </div>
+      </div>
+
+      <div class="private-hospitals">
+        <h2>🏥 Clínicas Privadas</h2>
+        <div class="hospitals-grid">
+          
+          <div class="hospital-card private">
+            <h3>Clínica Anglo Americana</h3>
+            <p class="hospital-address">Av. Alfredo Salazar 314, San Isidro</p>
+            <p class="hospital-phone">📞 (01) 616-8900</p>
+            <p class="hospital-specialty">Emergencias 24h • Servicios premium</p>
+            <button onclick="callNumber('016168900')" class="call-btn">Llamar</button>
+          </div>
+
+          <div class="hospital-card private">
+            <h3>Clínica Internacional</h3>
+            <p class="hospital-address">Av. Guardia Civil 337, San Borja</p>
+            <p class="hospital-phone">📞 (01) 619-6161</p>
+            <p class="hospital-specialty">Emergencias 24h • Múltiples sedes</p>
+            <button onclick="callNumber('016196161')" class="call-btn">Llamar</button>
+          </div>
+
+          <div class="hospital-card private">
+            <h3>Clínica Ricardo Palma</h3>
+            <p class="hospital-address">Av. Javier Prado Este 1066, San Isidro</p>
+            <p class="hospital-phone">📞 (01) 224-2224</p>
+            <p class="hospital-specialty">Emergencias 24h • Cardiología</p>
+            <button onclick="callNumber('012242224')" class="call-btn">Llamar</button>
+          </div>
+
+        </div>
+      </div>
+
+    </div>
+  </main>
+</Layout>
+
+<script>
+  function callNumber(phoneNumber: string): void {
+    if (confirm(`¿Deseas llamar al número ${phoneNumber}?`)) {
+      window.location.href = `tel:${phoneNumber}`;
+    }
+  }
+</script>
+
+<style>
+  .directory-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 2rem 1rem;
+  }
+
+  .directory-header {
+    text-align: center;
+    margin-bottom: 3rem;
+  }
+
+  .directory-header h1 {
+    color: #1e293b;
+    font-size: 2.5rem;
+    margin-bottom: 1rem;
+  }
+
+  .directory-header p {
+    color: #64748b;
+    font-size: 1.2rem;
+    margin-bottom: 2rem;
+  }
+
+  .back-btn {
+    display: inline-block;
+    background: #3b82f6;
+    color: white;
+    padding: 0.75rem 1.5rem;
+    text-decoration: none;
+    border-radius: 0.5rem;
+    font-weight: 500;
+    transition: background 0.3s;
+  }
+
+  .back-btn:hover {
+    background: #2563eb;
+  }
+
+  .emergency-numbers {
+    background: linear-gradient(135deg, #fee2e2, #fef3c7);
+    border: 2px solid #f87171;
+    border-radius: 1rem;
+    padding: 2rem;
+    margin-bottom: 3rem;
+  }
+
+  .emergency-numbers h2 {
+    color: #dc2626;
+    text-align: center;
+    margin-bottom: 1.5rem;
+    font-size: 1.8rem;
+  }
+
+  .emergency-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 1.5rem;
+  }
+
+  .emergency-card {
+    background: white;
+    border-radius: 1rem;
+    padding: 1.5rem;
+    text-align: center;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    border: 2px solid #e5e7eb;
+  }
+
+  .emergency-card.urgent {
+    border-color: #dc2626;
+    background: linear-gradient(135deg, #fee2e2, #fef3c7);
+  }
+
+  .emergency-icon {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+  }
+
+  .emergency-info h3 {
+    color: #1e293b;
+    margin-bottom: 0.5rem;
+    font-size: 1.2rem;
+  }
+
+  .emergency-number {
+    font-size: 2rem;
+    font-weight: bold;
+    color: #dc2626;
+    margin-bottom: 1rem;
+  }
+
+  .hospitals-section, .private-hospitals {
+    margin-bottom: 3rem;
+  }
+
+  .hospitals-section h2, .private-hospitals h2 {
+    color: #1e293b;
+    font-size: 1.8rem;
+    margin-bottom: 1.5rem;
+    text-align: center;
+  }
+
+  .hospitals-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+    gap: 1.5rem;
+  }
+
+  .hospital-card {
+    background: white;
+    border-radius: 1rem;
+    padding: 1.5rem;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    border: 2px solid #e5e7eb;
+    transition: transform 0.3s, box-shadow 0.3s;
+  }
+
+  .hospital-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 15px rgba(0, 0, 0, 0.15);
+  }
+
+  .hospital-card.private {
+    border-color: #10b981;
+    background: linear-gradient(135deg, #f0fdf4, #ecfdf5);
+  }
+
+  .hospital-card h3 {
+    color: #1e293b;
+    font-size: 1.2rem;
+    margin-bottom: 0.75rem;
+    font-weight: 600;
+  }
+
+  .hospital-address {
+    color: #64748b;
+    font-size: 0.95rem;
+    margin-bottom: 0.5rem;
+  }
+
+  .hospital-phone {
+    color: #3b82f6;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+  }
+
+  .hospital-specialty {
+    color: #6b7280;
+    font-size: 0.9rem;
+    margin-bottom: 1rem;
+    font-style: italic;
+  }
+
+  .call-btn {
+    width: 100%;
+    background: #dc2626;
+    color: white;
+    border: none;
+    padding: 0.75rem;
+    border-radius: 0.5rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.3s;
+  }
+
+  .call-btn:hover {
+    background: #b91c1c;
+  }
+
+  .private .call-btn {
+    background: #10b981;
+  }
+
+  .private .call-btn:hover {
+    background: #059669;
+  }
+
+  @media (max-width: 768px) {
+    .directory-header h1 {
+      font-size: 2rem;
+    }
+    
+    .hospitals-grid {
+      grid-template-columns: 1fr;
+    }
+    
+    .emergency-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+</style> 

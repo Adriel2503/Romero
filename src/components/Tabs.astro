@@ -1,6 +1,7 @@
 ---
 import DiabetesCharts from './DiabetesCharts.astro';
 import HipertensionCharts from './HipertensionCharts.astro';
+import RenalCharts from './RenalCharts.astro';
 
 const tabs = [
   { id: 'hipertension', label: 'Hipertensión Arterial', active: true },
@@ -33,8 +34,9 @@ const tabs = [
       <DiabetesCharts />
     </div>
     <div class="tab-pane" id="renal">
-      <h2>Insuficiencia Renal</h2>
-      <p>Información sobre la insuficiencia renal y sus cuidados.</p>
+      <h2>Monitoreo de Insuficiencia Renal</h2>
+      <p>Visualización de los parámetros de laboratorio para el monitoreo de la función renal.</p>
+      <RenalCharts />
     </div>
   </div>
 </div>

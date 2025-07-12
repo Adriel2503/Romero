@@ -5,7 +5,7 @@
 <div class="emergency-section">
   <h3>Emergencias</h3>
   <div class="emergency-buttons">
-    <button class="emergency-btn ambulance-btn" onclick="callAmbulance()">
+    <button class="emergency-btn ambulance-btn" id="ambulance-btn">
       <div class="btn-icon">🚑</div>
       <div class="btn-text">
         <span class="btn-title">Llamar Ambulancia</span>
@@ -13,7 +13,7 @@
       </div>
     </button>
     
-    <button class="emergency-btn pharmacy-btn" onclick="callPharmacy()">
+    <button class="emergency-btn pharmacy-btn" id="pharmacy-btn">
       <div class="btn-icon">💊</div>
       <div class="btn-text">
         <span class="btn-title">Llamar Farmacia</span>
@@ -131,22 +131,26 @@
 </style>
 
 <script>
-  function callAmbulance() {
-    // Número de emergencias en España: 112
-    // Puedes cambiar este número según tu país
-    const emergencyNumber = "112";
-    
-    if (confirm("¿Deseas llamar a la ambulancia?\n\nNúmero: " + emergencyNumber)) {
-      window.location.href = `tel:${emergencyNumber}`;
+  document.addEventListener('DOMContentLoaded', function() {
+    // Botón de ambulancia
+    const ambulanceBtn = document.getElementById('ambulance-btn');
+    if (ambulanceBtn) {
+      ambulanceBtn.addEventListener('click', function() {
+        console.log('Botón ambulancia clickeado');
+        window.location.href = "/ambulancia";
+      });
     }
-  }
 
-  function callPharmacy() {
-    // Número de ejemplo para farmacia - cambiar por el número real
-    const pharmacyNumber = "911234567";
-    
-    if (confirm("¿Deseas llamar a la farmacia?\n\nNúmero: " + pharmacyNumber)) {
-      window.location.href = `tel:${pharmacyNumber}`;
+    // Botón de farmacia
+    const pharmacyBtn = document.getElementById('pharmacy-btn');
+    if (pharmacyBtn) {
+      pharmacyBtn.addEventListener('click', function() {
+        const pharmacyNumber = "911234567";
+        
+        if (confirm("¿Deseas llamar a la farmacia?\n\nNúmero: " + pharmacyNumber)) {
+          window.location.href = `tel:${pharmacyNumber}`;
+        }
+      });
     }
-  }
+  });
 </script> 
